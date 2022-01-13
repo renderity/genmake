@@ -2,5 +2,8 @@
   "name": "genmake",
   "version": "0.0.2",
   "description": "Makefile generator",
-  "bin": "index.js"
+  "bin": "index.js",
+  "dependencies": {
+    "comment-json": "latest"
+  }
 }

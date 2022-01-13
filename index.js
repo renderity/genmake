@@ -51,6 +51,8 @@ const path = require('path');
 const fs = require('fs');
 const child_process = require('child_process');
 
+const comment_json = require('comment-json');
+
 const CONFIG = require('./config');
 
 
@@ -1476,4 +1478,5 @@ const dirname = file ? path.parse(file).dir : process.cwd();
 
 const make = new Make({ env, dirname });
 
-make.create(JSON.parse(fs.readFileSync(file || path.join(process.cwd(), 'genmake.json'), 'utf8')));
+// make.create(JSON.parse(fs.readFileSync(file || path.join(process.cwd(), 'genmake.json'), 'utf8')));
+make.create(comment_json.parse(fs.readFileSync(file || path.join(process.cwd(), 'genmake.json'), 'utf8')));
