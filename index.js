@@ -1049,11 +1049,11 @@ class Make
 
 		let output = '';
 
-		output += `$(BUILD)/${ location }/${ this.o }/${ entry.file }.${ this.o } : ${ entry.file }\n`;
+		output += `$(BUILD)/${ location }/${ CONFIG[this.env].o }/${ entry.file }.${ CONFIG[this.env].o } : ${ entry.file }\n`;
 
-		output += `\t${ this.mkdir(`$(BUILD)/${ location }/${ this.o }/${ dir }`) } && `;
+		output += `\t${ this.mkdir(`$(BUILD)/${ location }/${ CONFIG[this.env].o }/${ dir }`) } && `;
 
-		output += `${ this.ASSEMBLER } ${ entry.file } ${ this.ASSEMBLER_ARG } ${ this.PREF_OUT_OBJ }$(BUILD)/${ location }/${ this.o }/${ entry.file }.${ this.o }`;
+		output += `${ CONFIG[this.env].ASSEMBLER } ${ entry.file } ${ CONFIG[this.env].ASSEMBLER_ARG } ${ entry.flags } ${ CONFIG[this.env].PREF_OUT_OBJ }$(BUILD)/${ location }/${ CONFIG[this.env].o }/${ entry.file }.${ CONFIG[this.env].o }`;
 
 		return output;
 	}

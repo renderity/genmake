@@ -76,6 +76,11 @@ module.exports =
 
 		bin: 'wasm',
 
+		// Clang consumes WAST WebAssembly format with ".s" extension.
+		ASSEMBLER: '/home/denis/lib/wasi-sdk-14.0/bin/clang',
+
+		ASSEMBLER_ARG: '--target=wasm32-unknown-wasi-unknown --sysroot=/home/denis/lib/wasi-sdk-14.0/share/wasi-sysroot',
+
 		// wasi-sdk clang is set for wasm compilation, but regular clang can also be used with proper flags.
 		// C_COMPILER: 'clang',
 		C_COMPILER: '/home/denis/lib/wasi-sdk-14.0/bin/clang',
