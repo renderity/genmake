@@ -40,6 +40,8 @@ module.exports =
 
 		UNIFORM_ARG:
 		[
+			'ARCH=wasm32',
+
 			'NO_LINK=-c',
 
 			'VERBOSE:=-Wall -Wextra -Wabi -Wpedantic -v',
@@ -123,6 +125,8 @@ module.exports =
 
 		UNIFORM_ARG:
 		[
+			'ARCH=x64',
+
 			'NO_LINK=-c',
 
 			'VERBOSE:=-Wall -Wextra -Wabi -Wpedantic -v',
