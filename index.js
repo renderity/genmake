@@ -1072,7 +1072,7 @@ class Make
 		{
 		case GCC_X64:
 		{
-			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
+			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
 
 			// output += ` && objdump -d -M intel -S $(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a } > $(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1082,7 +1082,7 @@ class Make
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
-			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
+			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
 
 			// output += ` && wasm-decompile $(BUILD)/output/${ this.a }/${ entry.name }.${ this.a } -o $(BUILD)/output/${ this.s }/${ entry.name }.${ this.s }`;
 
@@ -1091,7 +1091,7 @@ class Make
 
 		case MSVS_X64:
 		{
-			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
+			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
 
 			// output += ` && dumpbin /disasm $(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a } /out:$(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1118,7 +1118,7 @@ class Make
 		{
 		case GCC_X64:
 		{
-			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG_SHARED } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].so }/${ entry.name }.${ CONFIG[this.env].so }`;
+			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG_SHARED } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].so }/${ entry.name }.${ CONFIG[this.env].so }`;
 
 			// output += ` && objdump -d -M intel -S $(BUILD)/output/${ CONFIG[this.env].so }/${ entry.name }.${ CONFIG[this.env].so } > $(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1145,7 +1145,7 @@ class Make
 		{
 		case GCC_X64:
 		{
-			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ entry.system_libraries.map((lib) => `-l ${ lib }`).join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
+			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ entry.system_libraries.map((lib) => `-l ${ lib }`).join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
 
 			// output += ` && objdump -d -M intel -S $(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin } > $(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1154,7 +1154,7 @@ class Make
 
 		case MSVS_X64:
 		{
-			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ entry.system_libraries.join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
+			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ entry.system_libraries.join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
 
 			// output += ` && dumpbin /disasm $(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin } /out:$(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1164,7 +1164,7 @@ class Make
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
-			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
+			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
 
 			// output += ` && wasm-decompile $(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin } -o $(BUILD)/output/${ CONFIG[this.env].s }/${ entry.name }.${ CONFIG[this.env].s }`;
 
@@ -1240,6 +1240,7 @@ ${ (options?.variables?.[this.env] ? Object.keys(options.variables[this.env]).ma
 			{
 				entry.name = entry.name || 'build';
 				entry.system_libraries = makeArray(entry.system_libraries);
+				entry.args_linker = makeArray(entry.args_linker);
 
 				entry.watch_files2 =
 					entry.watch_files

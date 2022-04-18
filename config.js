@@ -108,7 +108,7 @@ module.exports =
 		// LINKER: '/home/denis/lib/wasi-sdk-14.0/bin/wasm-ld',
 
 		// use 4gb of memory
-		LINKER_ARG: '-mwasm32 -error-limit=0 --export-all --no-entry --allow-undefined --no-check-features --import-memory --shared-memory --max-memory=4294967296 -L /home/denis/lib/wasi-sdk-14.0/share/wasi-sysroot/lib/wasm32-wasi -lc -lc++ -lc++abi',
+		LINKER_ARG: '-mwasm32 -error-limit=0 --export-all --no-entry --allow-undefined --no-check-features --import-memory --shared-memory -L /home/denis/lib/wasi-sdk-14.0/share/wasi-sysroot/lib/wasm32-wasi -lc -lc++ -lc++abi',
 		// LINKER_ARG: '-mwasm32 -ferror-limit=0 --export-all --no-entry -L /lib/llvm-12/lib -lc++',
 	},
 
