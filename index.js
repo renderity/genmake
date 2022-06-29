@@ -59,13 +59,37 @@ const CONFIG = require('./config');
 
 const LOG = console.log.bind(console);
 
-const replaceVar = (src_str, _var, val) =>
+// const replaceVar = (src_str, _var, val) =>
+// {
+// 	let result = src_str;
+
+// 	if (result.includes(_var))
+// 	{
+// 		result = replaceVar(result.replace(_var, val), _var);
+// 	}
+
+// 	return result;
+// };
+
+const replaceVar2 = (src_str, variables, val) =>
 {
 	let result = src_str;
 
-	if (result.includes(_var))
+	let counter = 0;
+
+	for (const key in variables)
 	{
-		result = replaceVar(result.replace(_var, val), _var);
+		if (result.includes(key))
+		{
+			result = result.replace(key, variables[key]);
+
+			++counter;
+		}
+	}
+
+	if (counter)
+	{
+		result = replaceVar2(result, variables);
 	}
 
 	return result;
@@ -75,20 +99,22 @@ const collectFiles = (dir, variables, _files = null) =>
 {
 	const files = _files || [];
 
-	const dir_items = fs.readdirSync(dir);
+	const _dir = replaceVar2(dir, variables);
+
+	const dir_items = fs.readdirSync(_dir);
 
 	dir_items.forEach
 	(
 		(_item) =>
 		{
-			let item_path = path.join(dir, _item);
+			let item_path = path.join(_dir, _item);
 
 			if (fs.lstatSync(item_path).isFile())
 			{
-				for (const key in variables)
-				{
-					item_path = replaceVar(item_path, variables[key], key);
-				}
+				// for (const key in variables)
+				// {
+				// 	item_path = replaceVar(item_path, variables[key], key);
+				// }
 
 				files.push(item_path);
 
@@ -598,7 +624,7 @@ class Make
 		case CLANG_WASM32:
 		{
 			// CPP_COMPILER_ARG = '-c -std=c++20 --target=wasm32-unknown-unknown-wasm -O3 -msimd128 -Wall -Wextra -Wpedantic -v -I /usr/include/c++/10 -I /usr/include -I /usr/include/x86_64-linux-gnu -I /usr/include/x86_64-linux-gnu/c++/10';
-			CPP_COMPILER_ARG = '-c -std=c++20 --target=wasm32-unknown-unknown-wasm -O3 -msimd128 -Wall -Wextra -Wpedantic -v -I /home/denis/lib/wasi-sdk-12.0/share/wasi-sysroot/include -I /home/denis/lib/wasi-sdk-12.0/share/wasi-sysroot/include/c++/v1';
+			CPP_COMPILER_ARG = '-c -std=c++20 --target=wasm32-unknown-unknown-wasm -O3 -msimd128 -Wall -Wextra -Wpedantic -v -I ~/lib/wasi-sdk-12.0/share/wasi-sysroot/include -I ~/lib/wasi-sdk-12.0/share/wasi-sysroot/include/c++/v1';
 
 			break;
 		}
@@ -745,7 +771,7 @@ class Make
 		case CLANG_WASM32:
 		{
 			// LINKER_ARG = '-mwasm32 --export-all --no-entry --allow-undefined -L /usr/lib/gcc/x86_64-linux-gnu/10 -lstdc++';
-			LINKER_ARG = '-mwasm32 -error-limit=0 --export-all --no-entry- L /home/denis/lib -lc';
+			LINKER_ARG = '-mwasm32 -error-limit=0 --export-all --no-entry- L ~/lib -lc';
 
 			break;
 		}
@@ -773,6 +799,8 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_WASM32:
+		case CLANG_WASM64:
 		{
 			MAKE_TOOL = 'make';
 
@@ -872,7 +900,7 @@ class Make
 		{
 		case GCC_X64:
 		{
-			MAKE_TOOL_ARG = '';
+			MAKE_TOOL_ARG = '--jobs=4';
 
 			break;
 		}
@@ -887,13 +915,15 @@ class Make
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
-			MAKE_TOOL_ARG = '';
+			MAKE_TOOL_ARG = '--jobs=4';
 
 			break;
 		}
 
 		default:
 		}
+
+		this.MAKE_TOOL_ARG = MAKE_TOOL_ARG;
 
 
 
@@ -906,6 +936,7 @@ class Make
 		switch (process.platform)
 		{
 		case 'linux':
+		case 'darwin':
 		{
 			mkdir = (dir) => `mkdir -p ${ dir }`;
 
@@ -1185,11 +1216,47 @@ class Make
 
 		const variables = {};
 
-		if (options.variables?.[this.env])
+		variables['$(ROOT)'] = CONFIG.ROOT;
+
+		if (options?.variables)
 		{
-			for (const key in options.variables[this.env])
+			for (const key in options.variables)
 			{
-				variables[`$(${ key })`] = options.variables[this.env][key];
+				variables[`$(${ key })`] = options.variables[key];
+			}
+		}
+
+		const variables3 = {};
+
+		if (options?.variables2)
+		{
+			for (const key in options.variables2)
+			{
+				if (key.includes('|'))
+				{
+					const key_sub = key.split('|');
+
+					key_sub
+						.forEach
+						(
+							(elm) =>
+							{
+								variables3[elm] = options.variables2[key];
+							},
+						);
+				}
+				else
+				{
+					variables3[key] = options.variables2[key];
+				}
+			}
+		}
+
+		if (variables3?.[this.env])
+		{
+			for (const key in variables3[this.env])
+			{
+				variables[`$(${ key })`] = options.variables[key];
 			}
 		}
 
@@ -1201,7 +1268,9 @@ class Make
 SRC=${ this.dirname }/src
 BUILD=${ this.dirname }/build/$(ENV)
 ${ CONFIG[this.env].UNIFORM_ARG.join('\n') }
-${ (options?.variables?.[this.env] ? Object.keys(options.variables[this.env]).map((elm) => `${ elm }=${ options.variables[this.env][elm] }`) : []).join('\n') }`,
+ROOT=${ CONFIG.ROOT }
+${ (options?.variables ? Object.keys(options.variables).map((elm) => `${ elm }=${ options.variables[elm] }`) : []).join('\n') }
+${ Object.keys(variables3).map((elm) => `${ elm }=${ variables3[elm] }`).join('\n') }`,
 		];
 
 		const parseEntry = (entry, head_entry) =>
@@ -1219,19 +1288,21 @@ ${ (options?.variables?.[this.env] ? Object.keys(options.variables[this.env]).ma
 			entry.watch_files3 = makeArray(entry.watch_files3);
 			entry.watch_directories = makeArray(entry.watch_directories);
 
-			entry.watch_directories =
-				entry.watch_directories.map
-				(
-					(directory) =>
-					{
-						for (const key in variables)
-						{
-							directory = replaceVar(directory, key, variables[key]);
-						}
+			// entry.watch_directories =
+			// 	entry.watch_directories.map
+			// 	(
+			// 		(directory) =>
+			// 		{
+			// 			// for (const key in variables)
+			// 			// {
+			// 			// 	directory = replaceVar(directory, key, variables[key]);
+			// 			// }
 
-						return directory;
-					},
-				);
+			// 			directory = replaceVar(directory, key, variables[key]);
+
+			// 			return directory;
+			// 		},
+			// 	);
 
 			entry.watch_directories =
 				entry.watch_directories.map((directory) => collectFiles(directory, variables).join(' ')).join(' ');
@@ -1431,7 +1502,7 @@ LIB_EXT=${ CONFIG[this.env].a }`;
 		fs.mkdirSync(env);
 		fs.appendFileSync(makefile, output);
 
-		const proc = child_process.exec(`${ this.MAKE_TOOL } -f ${ makefile }`, { encoding: 'utf8' });
+		const proc = child_process.exec(`${ this.MAKE_TOOL } ${ this.MAKE_TOOL_ARG } -f ${ makefile }`, { encoding: 'utf8' });
 
 		proc.stdout.on
 		(
