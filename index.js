@@ -207,6 +207,7 @@ const C_EXT = [ '.c' ];
 
 
 const GCC_X64 = 'gcc-x64';
+const CLANG_ARM_MACOS = 'clang-arm-macos';
 const MSVS_X64 = 'msvs-x64';
 const CLANG_WASM32 = 'clang-wasm32';
 const CLANG_WASM64 = 'clang-wasm64';
@@ -231,6 +232,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
@@ -260,6 +262,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
@@ -289,6 +292,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
@@ -320,6 +324,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			a = 'a';
 
@@ -355,6 +360,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		case CLANG_WASM32:
 		case CLANG_WASM64:
 		{
@@ -384,6 +390,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		// case CLANG_ARM_MACOS:
 		{
 			s = 's';
 
@@ -423,6 +430,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			bin = 'bin';
 
@@ -463,6 +471,11 @@ class Make
 			ASSEMBLER = 'gcc';
 
 			break;
+		}
+
+		case CLANG_ARM_MACOS:
+		{
+			ASSEMBLER = 'clang';
 		}
 
 		case MSVS_X64:
@@ -799,8 +812,9 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
-		case CLANG_WASM32:
-		case CLANG_WASM64:
+		case CLANG_ARM_MACOS:
+		// case CLANG_WASM32:
+		// case CLANG_WASM64:
 		{
 			MAKE_TOOL = 'make';
 
@@ -820,6 +834,7 @@ class Make
 			switch (process.platform)
 			{
 			case 'linux':
+			case 'darwin':
 			{
 				MAKE_TOOL = 'make';
 
@@ -870,6 +885,7 @@ class Make
 			switch (process.platform)
 			{
 			case 'linux':
+			case 'darwin':
 			{
 				MAKE_TOOL_MAKEFILE_ARG = '-f';
 
@@ -899,6 +915,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			MAKE_TOOL_ARG = '--jobs=4';
 
@@ -1102,6 +1119,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].a }/${ entry.name }.${ CONFIG[this.env].a }`;
 
@@ -1148,6 +1166,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			output += `${ CONFIG[this.env].BUILDER } ${ entry.watch_files2.join(' ') } ${ CONFIG[this.env].BUILDER_ARG_SHARED } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].so }/${ entry.name }.${ CONFIG[this.env].so }`;
 
@@ -1175,6 +1194,7 @@ class Make
 		switch (this.env)
 		{
 		case GCC_X64:
+		case CLANG_ARM_MACOS:
 		{
 			output += `${ CONFIG[this.env].LINKER } ${ entry.watch_files2.join(' ') } ${ entry.system_libraries.map((lib) => `-l ${ lib }`).join(' ') } ${ CONFIG[this.env].LINKER_ARG } ${ entry.args_linker.join(' ') } ${ CONFIG[this.env].PREF_OUT_BIN }$(BUILD)/output/${ CONFIG[this.env].bin }/${ entry.name }.${ CONFIG[this.env].bin }`;
 
@@ -1256,7 +1276,7 @@ class Make
 		{
 			for (const key in variables3[this.env])
 			{
-				variables[`$(${ key })`] = options.variables[key];
+				variables[`$(${ key })`] = variables3[this.env];
 			}
 		}
 
@@ -1270,7 +1290,7 @@ BUILD=${ this.dirname }/build/$(ENV)
 ${ CONFIG[this.env].UNIFORM_ARG.join('\n') }
 ROOT=${ CONFIG.ROOT }
 ${ (options?.variables ? Object.keys(options.variables).map((elm) => `${ elm }=${ options.variables[elm] }`) : []).join('\n') }
-${ Object.keys(variables3).map((elm) => `${ elm }=${ variables3[elm] }`).join('\n') }`,
+${ (variables3?.[this.env] ? Object.keys(variables3[this.env]).map((elm) => `${ elm }=${ variables3[this.env][elm] }`) : []).join('\n') }`,
 		];
 
 		const parseEntry = (entry, head_entry) =>
@@ -1501,6 +1521,8 @@ LIB_EXT=${ CONFIG[this.env].a }`;
 
 		fs.mkdirSync(env);
 		fs.appendFileSync(makefile, output);
+
+		LOG(`${ this.MAKE_TOOL } ${ this.MAKE_TOOL_ARG } -f ${ makefile }`)
 
 		const proc = child_process.exec(`${ this.MAKE_TOOL } ${ this.MAKE_TOOL_ARG } -f ${ makefile }`, { encoding: 'utf8' });
 

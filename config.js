@@ -278,4 +278,67 @@ module.exports =
 
 		LINKER_ARG: '-flto --verbose',
 	},
+
+	'clang-arm-macos':
+	{
+		UNIFORM_ARG:
+		[
+			'ARCH=x64',
+
+			'NO_LINK=-c',
+
+			'VERBOSE:=-Wall -Wextra -Wabi -Wpedantic -v',
+
+			'NO_STD=--no-standard-libraries',
+
+			'OPT_SLOW=-O1',
+
+			'OPT_MEDIUM=-O2',
+
+			'OPT_FAST=-O3',
+
+			'OPT_SIZE=-Os',
+
+			// TODO: add more performance args
+			'OPT_FASTX=-Ofast -funroll-loops',
+
+			'STD_20=-std=c++20',
+
+			'SSE=-msse3',
+		],
+
+		INC: '-I ',
+
+		PREF_OUT_OBJ: '-o ',
+
+		PREF_OUT_BIN: '-o ',
+
+		a: 'a',
+
+		so: 'so',
+
+		o: 'o',
+
+		s: 's',
+
+		bin: 'bin',
+
+		C_COMPILER: 'clang',
+
+		C_COMPILER_ARG: '-m64',
+
+		CPP_COMPILER: 'clang++',
+
+		CPP_COMPILER_ARG: '--target=aarch64-apple-darwin',
+
+		BUILDER: 'ld',
+
+		BUILDER_ARG: '-r',
+
+		BUILDER_ARG_SHARED: '-shared -fPIC',
+
+		LINKER: 'clang++',
+
+		LINKER_ARG: '--verbose',
+	},
 };
