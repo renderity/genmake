@@ -1,22 +1,14 @@
-// const platforms =
-// {
-// 	'linux':
-// 	{
-// 		MAKE_TOOL: 'make',
+const fs = require('fs');
+const path = require('path');
 
-// 		MAKE_TOOL_INPUT_PREF: '-f',
-// 	},
 
-// 	'win32':
-// 	{
-// 		MAKE_TOOL: 'nmake',
 
-// 		MAKE_TOOL_INPUT_PREF: '/F',
-// 	},
-// };
+const GENMAKE_CONFIG =
+	JSON.parse(fs.readFileSync(path.join(__dirname, '../', 'genmake.config.json'), { encoding: 'utf8' }));
 
-// const ROOT = '/home/denis';
-const ROOT = '/Users/Denis';
+const { ROOT, WASI } = GENMAKE_CONFIG;
+
+
 
 module.exports =
 {
@@ -183,26 +175,26 @@ module.exports =
 		bin: 'wasm',
 
 		// Clang consumes WAST WebAssembly format with ".s" extension.
-		ASSEMBLER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/bin/clang`,
+		ASSEMBLER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/bin/clang`,
 
-		ASSEMBLER_ARG: `--target=wasm32-unknown-wasi-unknown --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/share/wasi-sysroot`,
+		ASSEMBLER_ARG: `--target=wasm32-unknown-wasi-unknown --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/share/wasi-sysroot`,
 
 		// wasi-sdk clang is set for wasm compilation, but regular clang can also be used with proper flags.
-		C_COMPILER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/bin/clang`,
+		C_COMPILER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/bin/clang`,
 
-		C_COMPILER_ARG: `--target=wasm32-unknown-wasi-unknown -ferror-limit=0 -fno-exceptions -mthread-model single --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/share/wasi-sysroot`,
+		C_COMPILER_ARG: `--target=wasm32-unknown-wasi-unknown -ferror-limit=0 -fno-exceptions -mthread-model single --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/share/wasi-sysroot`,
 
-		CPP_COMPILER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/bin/clang++`,
+		CPP_COMPILER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/bin/clang++`,
 
-		CPP_COMPILER_ARG: `--target=wasm32-unknown-wasi-unknown -ferror-limit=0 -fno-exceptions -mthread-model single --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/share/wasi-sysroot`,
+		CPP_COMPILER_ARG: `--target=wasm32-unknown-wasi-unknown -ferror-limit=0 -fno-exceptions -mthread-model single --sysroot=${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/share/wasi-sysroot`,
 
-		BUILDER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/bin/wasm-ld`,
+		BUILDER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/bin/wasm-ld`,
 
 		BUILDER_ARG: '-r -mwasm32 -error-limit=0 --export-all --no-entry --allow-undefined --no-check-features',
 
-		LINKER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/bin/wasm-ld`,
+		LINKER: `${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/bin/wasm-ld`,
 
-		LINKER_ARG: `-mwasm32 -error-limit=0 --export-all --no-entry --allow-undefined --no-check-features --import-memory --shared-memory -L ${ ROOT }/reps/WebAssembly/wasi-sdk/build/wasi-sdk-15.1g37ae6af88201/share/wasi-sysroot/lib/wasm32-wasi -lc -lc++ -lc++abi`,
+		LINKER_ARG: `-mwasm32 -error-limit=0 --export-all --no-entry --allow-undefined --no-check-features --import-memory --shared-memory -L ${ ROOT }/reps/WebAssembly/wasi-sdk/build/${ WASI }/share/wasi-sysroot/lib/wasm32-wasi -lc -lc++ -lc++abi`,
 	},
 
 	'gcc-x64':
